@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: Items K8S Service (Dev)
+
+  datasource:
+    url: jdbc:h2:mem:items
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    database: h2
+    hibernate:
+      ddl-auto: update
+
+  h2:
+    console:
+      enabled: true

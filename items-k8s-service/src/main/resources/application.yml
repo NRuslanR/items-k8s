@@ -17,7 +17,29 @@ management:
     livenessstate:
       enabled: true
 
-    readinessstate:
+    circuitbreakers:
       enabled: true
 
+    ratelimiters:
+      enabled: true
+    
+    readinessstate:
+      enabled: true
   
+resilience4j:
+  circuitbreaker:
+    backends:
+      item-categories-cb:
+        register-health-indicator: true
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 5
+        minimum-number-of-calls: 2
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 50s
+        permitted-number-of-calls-in-half-open-state: 2
+        slow-call-rate-threshold: 65
+        slow-call-duration-threshold: 3s
+         
+item-categories-service:
+  name: item-categories-k8s-service
+  path: /api/item-categories

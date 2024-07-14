@@ -1,4 +1,4 @@
-package org.example.items_k8s_service.application.infrastructure.integration.item_categories;
+package org.example.items_k8s_service.application.infrastructure.integration.item_categories.config;
 
 import java.util.List;
 

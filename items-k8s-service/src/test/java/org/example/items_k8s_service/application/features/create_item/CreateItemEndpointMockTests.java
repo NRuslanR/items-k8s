@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
+
 import org.example.items_k8s_service.shared.config.MockIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,7 @@ public class CreateItemEndpointMockTests
     @Test
     public void should_Return_SuccessfulCreateItemResponse_When_Request_Is_Valid()
     {
-        var createItemCommand = CreateItemCommand.of("#1");
+        var createItemCommand = CreateItemCommand.of("#1", UUID.randomUUID().toString());
 
         mockMvc
             .perform(
@@ -43,7 +45,10 @@ public class CreateItemEndpointMockTests
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.item").isNotEmpty())
             .andExpect(jsonPath("$.item.id").isNotEmpty())
-            .andExpect(jsonPath("$.item.name").value(createItemCommand.getName()));
+            .andExpect(jsonPath("$.item.name").value(createItemCommand.getName()))
+            .andExpect(jsonPath("$.item.category").isNotEmpty())
+            .andExpect(jsonPath("$.item.category.id").value(createItemCommand.getCategoryId()))
+            .andExpect(jsonPath("$.item.category.name").isNotEmpty());
     }
 
     @SneakyThrows

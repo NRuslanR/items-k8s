@@ -1,5 +1,7 @@
 package org.example.items_k8s_service.application.features.shared;
 
+import org.example.item_categories_interfaces.ItemCategoryDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,4 +13,5 @@ public class ItemDto
 {
     private String id;
     private String name;
+    private ItemCategoryDto category;
 }

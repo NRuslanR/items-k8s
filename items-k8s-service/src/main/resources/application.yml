@@ -2,6 +2,19 @@ spring:
   application:
     name: Items K8S Service
 
+  datasource:
+    url: jdbc:postgresql://localhost/items
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+
+  h2:
+    console:
+      enabled: true
+
 management:
   endpoints:
     web:

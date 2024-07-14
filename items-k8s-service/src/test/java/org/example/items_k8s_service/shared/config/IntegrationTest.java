@@ -11,18 +11,20 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
-@Tag("MockIntegrationTest")
-@EnableFeignClients(basePackages = "org.example.items_k8s_service")
-@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@Tag("IntegrationTest")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @TestInstance(Lifecycle.PER_CLASS)
-public @interface MockIntegrationTest 
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
+@Testcontainers
+@Import(IntegrationTestsConfig.class)
+public @interface IntegrationTest 
 {
     
 }

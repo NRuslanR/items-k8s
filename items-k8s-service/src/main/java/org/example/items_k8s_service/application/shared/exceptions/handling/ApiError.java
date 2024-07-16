@@ -1,7 +1,6 @@
 package org.example.items_k8s_service.application.shared.exceptions.handling;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,9 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
-@JsonTypeName("error")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
+// @JsonTypeName("errors")
+// @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
 public class ApiError 
 {
-    private String message;
+    public static ApiError of(String error)
+    {
+        return ApiError.of(List.of(error));
+    }
+
+    private List<String> errors;
 }

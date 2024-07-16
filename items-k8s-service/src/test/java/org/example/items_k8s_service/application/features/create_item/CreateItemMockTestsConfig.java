@@ -9,13 +9,15 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 
 import jakarta.annotation.PostConstruct;
+import lombok.experimental.Delegate;
 import wiremock.org.apache.commons.lang3.RandomStringUtils;
 
 @TestConfiguration
 @Import({
     GetItemCategoryEndpointClientMockTestsConfig.class,
     CreateItemServiceMockTestsConfig.class,
-    CreateItemTestsConfig.class
+    CreateItemTestsConfig.class,
+    CreateItemServiceImpl.class
 })
 public class CreateItemMockTestsConfig 
 {
@@ -25,6 +27,7 @@ public class CreateItemMockTestsConfig
     @Autowired
     private CreateItemServiceMockTestsConfig createItemServiceMockTestsConfig;
 
+    @Delegate
     @Autowired
     private CreateItemTestsConfig createItemTestsConfig;
 

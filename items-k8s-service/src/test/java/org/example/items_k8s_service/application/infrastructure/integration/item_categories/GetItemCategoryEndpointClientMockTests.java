@@ -7,10 +7,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.stream.IntStream;
-
 import org.example.items_k8s_service.application.infrastructure.integration.item_categories.config.GetItemCategoryEndpointClientMockTestsConfig;
-import org.example.items_k8s_service.application.infrastructure.integration.shared.EndpointIntegrationException;
 import org.example.items_k8s_service.shared.config.MockIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
 
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 
@@ -29,7 +26,7 @@ import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
     WebMvcAutoConfiguration.class
 })
 @Import(GetItemCategoryEndpointClientMockTestsConfig.class)
-@ContextConfiguration(classes = GetItemCategoryEndpointClient.class)
+@SpringBootTest(classes = GetItemCategoryEndpointClient.class)
 public class GetItemCategoryEndpointClientMockTests 
 {
     @Autowired
@@ -41,7 +38,7 @@ public class GetItemCategoryEndpointClientMockTests
     @BeforeEach
     public void setupForEach()
     {
-        config.getCircuitBreaker().transitionToClosedState();
+        config.resetFailedStates();
     }
     
     @Test
@@ -72,22 +69,12 @@ public class GetItemCategoryEndpointClientMockTests
     @Test
     public void should_CircuitBreaker_Be_Opened_When_ServiceUnavailable()
     {
-        var endpointCallAttempts = config.getCircuitBreakerConfig().getSlidingWindowSize();
-
         assertThrows(CallNotPermittedException.class, () -> {
 
-            IntStream.rangeClosed(1, endpointCallAttempts).forEach(i -> {
+            config.executeToOpenCircuitBreaker(() -> {
 
-                try 
-                {
-                    getItemCategoryEndpointClient
-                        .getItemCategoryByIdSafely(config.serviceUnavailableItemCategoryId());
-
-                } catch (EndpointIntegrationException e) 
-                {
-                    
-                }
-
+                getItemCategoryEndpointClient
+                    .getItemCategoryByIdSafely(config.serviceUnavailableItemCategoryId());
             });
             
         });
@@ -96,15 +83,13 @@ public class GetItemCategoryEndpointClientMockTests
     @Test
     public void should_CircuitBreaker_Be_Open_When_ServiceTimeout()
     {
-        var endpointCallAttempts = config.getCircuitBreakerConfig().getSlidingWindowSize();
-
         assertThrows(CallNotPermittedException.class, () -> {
 
-            IntStream.rangeClosed(1, endpointCallAttempts).forEach(i -> {
+            config.executeToOpenCircuitBreaker(() -> {
 
                 getItemCategoryEndpointClient
                     .getItemCategoryByIdSafely(config.serviceTimeoutItemCategoryId());
-
+                    
             });
 
         });

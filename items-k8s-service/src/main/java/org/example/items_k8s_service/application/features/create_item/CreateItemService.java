@@ -5,5 +5,6 @@ import org.example.items_k8s_service.application.features.shared.ItemDto;
 
 public interface CreateItemService 
 {
-    ItemDto createItem(CreateItemCommand command, ItemCategoryDto category);    
+    ItemDto createItem(CreateItemCommand command, ItemCategoryDto category)
+        throws NullPointerException, CreateItemCommandInCorrectException;    
 }

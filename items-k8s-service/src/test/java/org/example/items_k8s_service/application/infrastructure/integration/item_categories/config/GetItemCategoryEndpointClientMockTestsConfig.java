@@ -8,12 +8,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.serviceUnavailable;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathTemplate;
 
+import java.util.stream.IntStream;
+
 import org.example.item_categories_interfaces.GetItemCategoryResult;
 import org.example.item_categories_interfaces.ItemCategoryDto;
+import org.example.items_k8s_service.application.infrastructure.integration.shared.EndpointIntegrationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -98,6 +102,7 @@ public class GetItemCategoryEndpointClientMockTestsConfig
                         (int)circuitBreakerConfig
                                 .getSlowCallDurationThreshold().toMillis() + 1
                     )
+                    .withStatus(HttpStatus.NOT_FOUND.value())
                 
             )
         );
@@ -114,5 +119,29 @@ public class GetItemCategoryEndpointClientMockTestsConfig
     public ItemCategoryDto validItemCategoryInstance()
     {
         return ItemCategoryDto.of(validItemCategoryId(), RandomStringUtils.random(10));
+    }
+
+    public void resetFailedStates()
+    {
+        circuitBreaker.transitionToClosedState();
+    }
+
+    @SneakyThrows
+    public void executeToOpenCircuitBreaker(Runnable executable)
+    {
+        var endpointCallAttempts = circuitBreakerConfig.getSlidingWindowSize();
+
+        IntStream.rangeClosed(1, endpointCallAttempts).forEach(i -> {
+
+            try
+            {
+                executable.run();
+            }
+
+            catch (EndpointIntegrationException exception)
+            {
+                
+            }
+        });
     }
 }

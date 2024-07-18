@@ -18,7 +18,7 @@
   	
   <groupId>org.example</groupId>
   	
-  <artifactId>items_k8s</artifactId>
+  <artifactId>items-k8s</artifactId>
   	
   <version>0.0.1-SNAPSHOT</version>
   	
@@ -60,10 +60,12 @@
   	
   <modules>
     		
-    <module>items-k8s-service</module>
+    <module>items-service</module>
     	  
     <module>item-categories-interfaces</module>
       
+    <module>item-categories-service</module>
+
   </modules>
   	
   <dependencies>
@@ -141,6 +143,11 @@
       		
     </dependency>
     	
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
   </dependencies>
   	
   <dependencyManagement>

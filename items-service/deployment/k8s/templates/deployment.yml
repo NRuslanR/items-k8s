@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: items-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    svc: items-service
+---
+apiVersion: apps/v1
+kind: Secret
+metadata:
+  name: items-service-db-config
+type: Opaque
+data:
+  db-url: amRiYzpwb3N0Z3Jlc3FsOi8vcG9zdGdyZXMvaXRlbXMK
+  db-user: aXRlbXNfdXNlcgo=
+  db-password: aXRlbXNfdXNlcgo=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: items-service
+  labels:
+    svc: items-service
+spec:
+  selector:
+    matchLabels:
+      svc: items-service
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        svc: items-service
+    spec:
+      containers:
+        - name: items-service
+          image: @project.groupId@/@project.artifactId@:@project.version@
+          imagePullPolicy: IfNotPresent        
+          env:
+            - name: SPRING_DATASOURCE_URL 
+              valueFrom:
+                secretKeyRef:
+                  name: items-service-db-config
+                  key: db-url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: items-service-db-config
+                  key: db-user
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: items-service-db-config
+                  key: db-password
+          ports:
+            - containerPort: 8080
+              name: httpport
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 5
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: items-service-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /api/items
+          pathType: Prefix
+          backend:
+            service:
+              name: items-service
+              port:
+                number: 8080
+          

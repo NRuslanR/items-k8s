@@ -1,0 +1,14 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: Item Categories Application
+
+application:
+    failures:
+        endpoints:
+            get-item-categories:
+                service-unavailable-probability: 0.25
+                service-timeout-probability: 0.35
+                item-category-not-found-probability: 0.4

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import feign.RetryableException;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import jakarta.validation.ConstraintViolationException;
 
@@ -23,7 +24,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler
 {
     @ExceptionHandler({
         CallNotPermittedException.class,
-        EndpointIntegrationException.class
+        EndpointIntegrationException.class,
+        RetryableException.class
     })
     @ResponseStatus(code = HttpStatus.SERVICE_UNAVAILABLE)
     public ApiError handleEndpointIntegrationExceptions(Exception exception)

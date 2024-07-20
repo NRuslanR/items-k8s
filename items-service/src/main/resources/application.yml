@@ -54,7 +54,3 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 2
         slow-call-rate-threshold: 65
         slow-call-duration-threshold: 3s
-         
-item-categories-service:
-  name: item-categories-service
-  path: /api/item-categories

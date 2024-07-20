@@ -32,6 +32,15 @@ data:
   POSTGRES_USER: cG9zdGdyZXMK    
   POSTGRES_PASSWORD: cG9zdGdyZXMK
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: items-service-init
+data:
+  init.sql: |
+    CREATE DATABASE items;
+    CREATE ROLE LOGIN items_user PASSWORD 'items_user' ENCRYPTED;
+---
 apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
@@ -73,10 +82,15 @@ spec:
           volumeMounts:
             - name: postgres
               mountPath: /var/lib/postgresql/data
+            - name: items-service-init
+              mountPath: /docker-entrypoint-initdb.d
       volumes:
         - name: postgres
           persistentVolumeClaim:
             claimName: postgres
+        - name: items-service-init
+          configMap:
+            name: items-service-init
 ---
 apiVersion: v1
 kind: Service

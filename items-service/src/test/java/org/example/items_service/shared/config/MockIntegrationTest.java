@@ -14,14 +14,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.TestPropertySource;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
 @Tag("MockIntegrationTest")
-@EnableFeignClients(basePackages = "org.example.items_k8s_service")
-@TestPropertySource(locations = "classpath:application-test.properties")
+@EnableFeignClients(basePackages = "org.example.items_service")
+@TestPropertySources
 @TestInstance(Lifecycle.PER_CLASS)
 @Import({
     ApiExceptionHandler.class

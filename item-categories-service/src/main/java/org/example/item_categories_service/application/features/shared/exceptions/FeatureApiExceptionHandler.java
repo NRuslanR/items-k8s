@@ -2,8 +2,8 @@ package org.example.item_categories_service.application.features.shared.exceptio
 
 import java.net.http.HttpTimeoutException;
 
-import org.example.item_categories.application.features.get_item_category.FailureException;
-import org.example.item_categories.application.features.get_item_category.ItemCategoryNotFoundException;
+import org.example.item_categories_service.application.features.get_item_category.FailureException;
+import org.example.item_categories_service.application.features.get_item_category.ItemCategoryNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,0 +1,47 @@
+version: '3'
+services:
+  items-service:
+    build:
+      context: ../../items-service/
+      dockerfile: Dockerfile
+      args:
+        - AppVersion=${ITEMS_SERVICE_BUILD_VERSION}
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://items-postgres:${ITEMS_POSTGRES_PORT}/items
+      SPRING_DATASOURCE_USERNAME: ${ITEMS_SERVICE_DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${ITEMS_SERVICE_DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: default,docker
+      ITEM_CATEGORIES_SERVICE_NAME: ${ITEM_CATEGORIES_SERVICE_NAME}
+      ITEM_CATEGORIES_SERVICE_PORT: ${ITEM_CATEGORIES_SERVICE_PORT}
+    container_name: items-service
+    expose:
+      - ${ITEMS_SERVICE_PORT}
+    ports:
+      - target: ${ITEMS_SERVICE_PORT}
+        published: 18080
+        protocol: tcp
+        mode: host
+    depends_on:
+      items-postgres:
+        condition: service_healthy
+  
+  items-postgres:
+    image: postgres:12.3
+    container_name: items-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - target: ${ITEMS_POSTGRES_PORT}
+        published: 15432
+        protocol: tcp
+        mode: host
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -U postgres -d postgres"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - ./db-scripts:/docker-entrypoint-initdb.d
+
